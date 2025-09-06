@@ -50,8 +50,8 @@ If the lead qualifies based on budget, the system sends an email to the customer
 ---
 
 ## 🖼️ Workflow Diagram
-![Workflow]
-workflow.png
+![Workflow](workflow.png)
+
 
 
 ---
