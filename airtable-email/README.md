@@ -50,7 +50,7 @@ If the lead qualifies based on budget, the system sends an email to the customer
 ---
 
 ## 🖼️ Workflow Diagram
-![Workflow](docs/workflow airtable-email.png)
+![Workflow](docs/workflowairtable-email)
 
 
 
