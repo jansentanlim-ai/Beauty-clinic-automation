@@ -34,7 +34,7 @@ It is designed for **lead management and business development**, combining **AI-
 ---
 
 ## 🖼️ Workflow Diagram
-![Workflow Diagram](../docs/workflow-airtable-openai.png)
+![Workflow Diagram](../docs/workflow-airtable-openai-voice.png)
 
 ---
 
