@@ -1,0 +1,4169 @@
+{
+  "name": "Integration Airtable extended",
+  "flow": [
+    {
+      "id": 1,
+      "module": "airtable:TriggerWatchRecords",
+      "version": 3,
+      "parameters": {
+        "base": "{AIRTABLE_BASE_ID}",
+        "view": "",
+        "table": "{AIRTABLE_TABLE_ID}",
+        "config": {
+          "labelField": "Perusahaan",
+          "triggerField": "Created on"
+        },
+        "formula": "{Qualification} = \"qualified\"",
+        "maxRecords": 10,
+        "__IMTCONN__": "{CONNECTION_ID}",
+        "useColumnId": false
+      },
+      "mapper": {},
+      "metadata": {
+        "designer": {
+          "x": 0,
+          "y": 450
+        },
+        "restore": {
+          "parameters": {
+            "base": {
+              "label": "Lead Base"
+            },
+            "view": {
+              "label": "Empty"
+            },
+            "table": {
+              "label": "Lead Contacts"
+            },
+            "config": {
+              "nested": {
+                "labelField": {
+                  "label": "Perusahaan"
+                },
+                "triggerField": {
+                  "label": "Created on"
+                }
+              }
+            },
+            "__IMTCONN__": "{CONNECTION_ID}"
+          }
+        },
+        "parameters": [
+          {
+            "name": "__IMTCONN__",
+            "type": "account:airtable3,airtable2",
+            "label": "Connection",
+            "required": true
+          },
+          {
+            "name": "base",
+            "type": "select",
+            "label": "Base",
+            "required": true
+          },
+          {
+            "name": "useColumnId",
+            "type": "boolean",
+            "label": "Use Column ID",
+            "required": true
+          },
+          {
+            "name": "table",
+            "type": "select",
+            "label": "Table",
+            "required": true
+          },
+          {
+            "name": "config",
+            "spec": [
+              {
+                "name": "triggerField",
+                "type": "select",
+                "label": "Trigger field",
+                "required": true
+              },
+              {
+                "name": "triggerField",
+                "type": "hidden"
+              },
+              {
+                "name": "labelField",
+                "type": "select",
+                "label": "Label field",
+                "required": true
+              }
+            ],
+            "type": "collection",
+            "label": "Trigger configuration"
+          },
+          {
+            "name": "maxRecords",
+            "type": "integer",
+            "label": "Limit",
+            "required": true
+          },
+          {
+            "name": "view",
+            "type": "select",
+            "label": "View"
+          },
+          {
+            "name": "formula",
+            "type": "text",
+            "label": "Formula"
+          }
+        ],
+        "interface": [
+          {
+            "name": "id",
+            "type": "text",
+            "label": "ID"
+          },
+          {
+            "name": "createdTime",
+            "type": "date",
+            "label": "Created Time"
+          },
+          {
+            "name": "Nama Depan",
+            "type": "text",
+            "label": "Nama Depan"
+          },
+          {
+            "name": "Nama Belakang",
+            "type": "text",
+            "label": "Nama Belakang"
+          },
+          {
+            "name": "Email",
+            "type": "text",
+            "label": "Email"
+          },
+          {
+            "name": "No Telepon",
+            "type": "text",
+            "label": "No Telepon"
+          },
+          {
+            "name": "Perusahaan",
+            "type": "text",
+            "label": "Perusahaan"
+          },
+          {
+            "name": "Budget",
+            "type": "number",
+            "label": "Budget"
+          },
+          {
+            "name": "Note",
+            "type": "text",
+            "label": "Note",
+            "multiline": true
+          },
+          {
+            "name": "Created on",
+            "type": "date",
+            "label": "Created on"
+          },
+          {
+            "name": "Qualification",
+            "type": "text",
+            "label": "Qualification"
+          },
+          {
+            "name": "Message",
+            "type": "text",
+            "label": "Message"
+          },
+          {
+            "name": "Contacted on",
+            "time": false,
+            "type": "date",
+            "label": "Contacted on"
+          }
+        ]
+      }
+    },
+    {
+      "id": 30,
+      "module": "openai-gpt-3:CreateCompletion",
+      "version": 1,
+      "parameters": {
+        "__IMTCONN__": "{CONNECTION_ID}"
+      },
+      "mapper": {
+        "select": "chat",
+        "temperature": "1",
+        "top_p": "1",
+        "n_completions": "1",
+        "model": "gpt-4o-mini-search-preview",
+        "max_tokens": "2048",
+        "messages": [
+          {
+            "role": "user",
+            "content": "You are a research assistant helping prepare a voice agent for a business development call.\nResearch the company {{1.Perusahaan}}\n\nReview the following notes about their needs:{{1.Note}}\n\nBased on the research and notes, write a concise summary report highlighting:\n- who the company is and what they do\n- their likely goals or pain points based on this research and the {{1.Note}} they supplied.\n-how and ai automation agency's offerings could help them\n\nthe summary will be used by a voice agent to pitch the company, write in clear, professional, persuasive tone, suitable for spoken delivery",
+            "imageDetail": "auto"
+          }
+        ],
+        "response_format": "text",
+        "web_search_options": {
+          "user_location": {
+            "type": "approximate",
+            "approximate": {}
+          }
+        }
+      },
+      "metadata": {
+        "designer": {
+          "x": 300,
+          "y": 450
+        },
+        "restore": {
+          "parameters": {
+            "__IMTCONN__": "{CONNECTION_ID}"
+          },
+          "expect": {
+            "select": {
+              "label": "Create a Chat Completion (GPT and o1 models)"
+            },
+            "logit_bias": {
+              "mode": "chose"
+            },
+            "tool_choice": {
+              "mode": "chose",
+              "label": "Empty"
+            },
+            "stop": {
+              "mode": "chose"
+            },
+            "additionalParameters": {
+              "mode": "chose"
+            },
+            "model": {
+              "mode": "chose",
+              "label": "gpt-4o-mini-search-preview (system)"
+            },
+            "messages": {
+              "mode": "chose",
+              "items": [
+                {
+                  "role": {
+                    "mode": "chose",
+                    "label": "User"
+                  },
+                  "imageInputType": {
+                    "mode": "chose",
+                    "label": "Empty"
+                  },
+                  "imageDetail": {
+                    "mode": "chose",
+                    "label": "Auto"
+                  }
+                }
+              ]
+            },
+            "response_format": {
+              "mode": "chose",
+              "label": "Text"
+            },
+            "web_search_options": {
+              "nested": {
+                "search_context_size": {
+                  "mode": "chose",
+                  "label": "Empty"
+                }
+              }
+            },
+            "reasoning_effort": {
+              "mode": "chose",
+              "label": "Empty"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "__IMTCONN__",
+            "type": "account:openai-gpt-3",
+            "label": "Connection",
+            "required": true
+          }
+        ],
+        "expect": [
+          {
+            "name": "select",
+            "type": "select",
+            "label": "Select Method",
+            "required": true,
+            "validate": {
+              "enum": [
+                "chat",
+                "prompt"
+              ]
+            }
+          },
+          {
+            "name": "temperature",
+            "type": "number",
+            "label": "Temperature",
+            "validate": {
+              "max": 2,
+              "min": 0
+            }
+          },
+          {
+            "name": "top_p",
+            "type": "number",
+            "label": "Top P",
+            "validate": {
+              "max": 1,
+              "min": 0
+            }
+          },
+          {
+            "name": "n_completions",
+            "type": "number",
+            "label": "Number"
+          },
+          {
+            "name": "frequency_penalty",
+            "type": "number",
+            "label": "Frequency Penalty",
+            "validate": {
+              "max": 2,
+              "min": -2
+            }
+          },
+          {
+            "name": "presence_penalty",
+            "type": "number",
+            "label": "Presence Penalty",
+            "validate": {
+              "max": 2,
+              "min": -2
+            }
+          },
+          {
+            "name": "logit_bias",
+            "type": "array",
+            "label": "Token Probability",
+            "spec": {
+              "spec": [
+                {
+                  "name": "token",
+                  "type": "text",
+                  "label": "Token ID",
+                  "required": true
+                },
+                {
+                  "name": "probability",
+                  "type": "number",
+                  "label": "Probability",
+                  "required": true,
+                  "validate": {
+                    "max": 100,
+                    "min": -100
+                  }
+                }
+              ],
+              "type": "collection",
+              "label": "Token Probability",
+              "name": "value"
+            }
+          },
+          {
+            "name": "seed",
+            "type": "integer",
+            "label": "Seed"
+          },
+          {
+            "name": "tool_choice",
+            "type": "select",
+            "label": "Tool Choice",
+            "validate": {
+              "enum": [
+                "none",
+                "auto",
+                "required"
+              ]
+            }
+          },
+          {
+            "name": "stop",
+            "type": "array",
+            "label": "Stop Sequences",
+            "validate": {
+              "maxItems": 4
+            },
+            "spec": {
+              "type": "text",
+              "label": "Stop Sequence",
+              "name": "value"
+            }
+          },
+          {
+            "name": "additionalParameters",
+            "type": "array",
+            "label": "Other Input Parameters",
+            "spec": {
+              "spec": [
+                {
+                  "name": "key",
+                  "type": "text",
+                  "label": "Parameter Name",
+                  "required": true
+                },
+                {
+                  "name": "type",
+                  "type": "select",
+                  "label": "Input Type",
+                  "options": [
+                    {
+                      "label": "Text",
+                      "value": "text",
+                      "nested": [
+                        {
+                          "name": "value",
+                          "type": "text",
+                          "label": "Parameter Value"
+                        }
+                      ],
+                      "default": true
+                    },
+                    {
+                      "label": "Number",
+                      "value": "number",
+                      "nested": [
+                        {
+                          "name": "value",
+                          "type": "number",
+                          "label": "Parameter Value"
+                        }
+                      ]
+                    },
+                    {
+                      "label": "Boolean",
+                      "value": "boolean",
+                      "nested": [
+                        {
+                          "name": "value",
+                          "type": "boolean",
+                          "label": "Parameter Value"
+                        }
+                      ]
+                    },
+                    {
+                      "label": "Date",
+                      "value": "date",
+                      "nested": [
+                        {
+                          "name": "value",
+                          "type": "date",
+                          "label": "Parameter Value"
+                        }
+                      ]
+                    },
+                    {
+                      "label": "Any",
+                      "value": "any",
+                      "nested": [
+                        {
+                          "name": "value",
+                          "type": "any",
+                          "label": "Parameter Value"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ],
+              "type": "collection",
+              "label": "Input Parameter",
+              "name": "value"
+            }
+          },
+          {
+            "name": "model",
+            "type": "select",
+            "label": "Model",
+            "required": true
+          },
+          {
+            "name": "max_tokens",
+            "type": "uinteger",
+            "label": "Max Completion Tokens"
+          },
+          {
+            "name": "messages",
+            "type": "array",
+            "label": "Messages",
+            "required": true,
+            "spec": {
+              "label": "Message",
+              "type": "collection",
+              "spec": [
+                {
+                  "name": "role",
+                  "type": "select",
+                  "label": "Role",
+                  "required": true,
+                  "options": {
+                    "store": [
+                      {
+                        "label": "User",
+                        "value": "user",
+                        "nested": [
+                          {
+                            "help": "Text content of the message on behalf of the selected __Role__.",
+                            "name": "content",
+                            "type": "text",
+                            "label": "Text Content"
+                          },
+                          {
+                            "name": "imageInputType",
+                            "type": "select",
+                            "label": "Image Input Type",
+                            "mappable": false,
+                            "options": [
+                              {
+                                "value": "url",
+                                "label": "URL",
+                                "nested": [
+                                  {
+                                    "name": "imageUrl",
+                                    "label": "Image URL",
+                                    "type": "url",
+                                    "help": "Make sure to use a publicly accessible URL.\nYou can test if your image is publicly accessible by opening the link in an incognito tab."
+                                  }
+                                ]
+                              },
+                              {
+                                "value": "file",
+                                "label": "Image File",
+                                "nested": [
+                                  {
+                                    "name": "imageFile",
+                                    "label": "Image",
+                                    "type": "collection",
+                                    "spec": [
+                                      {
+                                        "name": "imageFilename",
+                                        "type": "filename",
+                                        "label": "Image Filename",
+                                        "semantic": "file:name",
+                                        "extension": [
+                                          "jpg",
+                                          "jpeg",
+                                          "png",
+                                          "webp",
+                                          "gif"
+                                        ],
+                                        "help": "Accepted extensions: `.jpg`, `.jpeg`, `.png`, `.webp` and `.gif`."
+                                      },
+                                      {
+                                        "name": "imageData",
+                                        "type": "buffer",
+                                        "label": "Image Data",
+                                        "semantic": "file:data"
+                                      }
+                                    ]
+                                  }
+                                ]
+                              }
+                            ]
+                          },
+                          {
+                            "name": "imageDetail",
+                            "type": "select",
+                            "label": "Image Detail",
+                            "help": "Recommended value: `Auto`",
+                            "options": [
+                              {
+                                "value": "auto",
+                                "default": true,
+                                "label": "Auto"
+                              },
+                              {
+                                "value": "high",
+                                "label": "High"
+                              },
+                              {
+                                "value": "low",
+                                "label": "Low"
+                              }
+                            ]
+                          }
+                        ]
+                      },
+                      {
+                        "label": "Assistant",
+                        "value": "assistant",
+                        "nested": [
+                          {
+                            "help": "Text content of the message on behalf of the selected __Role__.",
+                            "name": "content",
+                            "type": "text",
+                            "label": "Text Content"
+                          },
+                          {
+                            "name": "tool_calls",
+                            "label": "Tool Calls",
+                            "type": "array",
+                            "labels": {
+                              "add": "Add tool call"
+                            },
+                            "mode": "edit",
+                            "mappable": {
+                              "help": "You can map the entire `Choices[]: Message.Tool Calls` array from a previous Create a Completion module here."
+                            },
+                            "spec": {
+                              "label": "Tool Call",
+                              "type": "collection",
+                              "spec": [
+                                {
+                                  "name": "type",
+                                  "type": "hidden",
+                                  "default": "function"
+                                },
+                                {
+                                  "name": "id",
+                                  "type": "text",
+                                  "label": "Tool call ID",
+                                  "help": "Map this directly from the output of a previous **Create a Completion** module. Look for `Choices[]: Message.Tool Calls[]: ID`."
+                                },
+                                {
+                                  "name": "function",
+                                  "type": "collection",
+                                  "label": "Function",
+                                  "spec": [
+                                    {
+                                      "name": "name",
+                                      "label": "Name",
+                                      "type": "text",
+                                      "required": true,
+                                      "help": "The name of the function previously called."
+                                    },
+                                    {
+                                      "name": "arguments",
+                                      "label": "Arguments",
+                                      "type": "text",
+                                      "required": true,
+                                      "help": "The arguments previously output by the AI."
+                                    }
+                                  ]
+                                }
+                              ]
+                            }
+                          }
+                        ]
+                      },
+                      {
+                        "label": "Developer / System",
+                        "nested": [
+                          {
+                            "help": "Text content of the message on behalf of the selected __Role__.",
+                            "name": "content",
+                            "type": "text",
+                            "label": "Text Content"
+                          }
+                        ],
+                        "value": "system"
+                      },
+                      {
+                        "label": "Tool",
+                        "value": "tool",
+                        "nested": [
+                          {
+                            "help": "The return of the function. This role should only be used when you have processed a previous function call and want to send the output of the function execution back to the AI.",
+                            "name": "content",
+                            "type": "text",
+                            "label": "Text Content",
+                            "required": true
+                          },
+                          {
+                            "label": "Tool Call ID.",
+                            "name": "tool_call_id",
+                            "type": "text",
+                            "required": true,
+                            "help": "Map this directly from the output of a previous **Create a Completion** module. Look for `Choices[]: Message.Tool Calls[]: ID`."
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                }
+              ],
+              "name": "value"
+            }
+          },
+          {
+            "name": "response_format",
+            "type": "select",
+            "label": "Response Format",
+            "validate": {
+              "enum": [
+                "text",
+                "json_object"
+              ]
+            }
+          },
+          {
+            "name": "web_search_options",
+            "type": "collection",
+            "label": "Web Search Options",
+            "spec": [
+              {
+                "name": "search_context_size",
+                "type": "select",
+                "label": "Search Context Size",
+                "validate": {
+                  "enum": [
+                    "low",
+                    "medium",
+                    "high"
+                  ]
+                }
+              },
+              {
+                "name": "user_location",
+                "type": "collection",
+                "label": "User Location",
+                "spec": [
+                  {
+                    "name": "type",
+                    "type": "hidden"
+                  },
+                  {
+                    "name": "approximate",
+                    "type": "collection",
+                    "label": "Approximate",
+                    "spec": [
+                      {
+                        "name": "city",
+                        "type": "text",
+                        "label": "City"
+                      },
+                      {
+                        "name": "country",
+                        "type": "text",
+                        "label": "Country"
+                      },
+                      {
+                        "name": "region",
+                        "type": "text",
+                        "label": "Region"
+                      },
+                      {
+                        "name": "timezone",
+                        "type": "text",
+                        "label": "Timezone"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "name": "reasoning_effort",
+            "type": "select",
+            "label": "Reasoning Effort",
+            "validate": {
+              "enum": [
+                "minimal",
+                "low",
+                "medium",
+                "high"
+              ]
+            }
+          },
+          {
+            "name": "prediction",
+            "type": "text",
+            "label": "Predicted Outputs"
+          }
+        ],
+        "interface": [
+          {
+            "name": "result",
+            "type": "any",
+            "label": "Result"
+          },
+          {
+            "name": "id",
+            "type": "text",
+            "label": "ID"
+          },
+          {
+            "name": "object",
+            "type": "text",
+            "label": "Object"
+          },
+          {
+            "name": "created",
+            "type": "date",
+            "label": "Created"
+          },
+          {
+            "name": "model",
+            "type": "text",
+            "label": "Model"
+          },
+          {
+            "name": "choices",
+            "spec": [
+              {
+                "name": "text",
+                "type": "text",
+                "label": "Text"
+              },
+              {
+                "name": "index",
+                "type": "number",
+                "label": "Index"
+              },
+              {
+                "name": "logprobs",
+                "type": "text",
+                "label": "Log Probs"
+              },
+              {
+                "name": "finish_reason",
+                "type": "text",
+                "label": "Finish Reason"
+              },
+              {
+                "name": "message",
+                "spec": [
+                  {
+                    "name": "role",
+                    "type": "text",
+                    "label": "Role"
+                  },
+                  {
+                    "name": "content",
+                    "type": "text",
+                    "label": "Content"
+                  },
+                  {
+                    "name": "tool_calls",
+                    "spec": [
+                      {
+                        "name": "id",
+                        "type": "text",
+                        "label": "ID"
+                      },
+                      {
+                        "name": "type",
+                        "type": "text",
+                        "label": "Type"
+                      },
+                      {
+                        "name": "function",
+                        "spec": [
+                          {
+                            "name": "name",
+                            "type": "text",
+                            "label": "Name"
+                          },
+                          {
+                            "name": "arguments",
+                            "type": "text",
+                            "label": "Arguments"
+                          }
+                        ],
+                        "type": "collection",
+                        "label": "Function"
+                      }
+                    ],
+                    "type": "array",
+                    "label": "Tool Calls"
+                  },
+                  {
+                    "name": "refusal",
+                    "type": "text",
+                    "label": "Refusal"
+                  },
+                  {
+                    "name": "annotations",
+                    "spec": [
+                      {
+                        "name": "type",
+                        "type": "text",
+                        "label": "Type"
+                      },
+                      {
+                        "name": "url_citation",
+                        "spec": [
+                          {
+                            "name": "end_index",
+                            "type": "number",
+                            "label": "End Index"
+                          },
+                          {
+                            "name": "start_index",
+                            "type": "number",
+                            "label": "Start Index"
+                          },
+                          {
+                            "name": "title",
+                            "type": "text",
+                            "label": "Title"
+                          },
+                          {
+                            "name": "url",
+                            "type": "text",
+                            "label": "URL"
+                          }
+                        ],
+                        "type": "collection",
+                        "label": "URL Citation"
+                      }
+                    ],
+                    "type": "array",
+                    "label": "Annotations"
+                  }
+                ],
+                "type": "collection",
+                "label": "Message"
+              }
+            ],
+            "type": "array",
+            "label": "Choices"
+          },
+          {
+            "name": "usage",
+            "spec": [
+              {
+                "name": "prompt_tokens",
+                "type": "number",
+                "label": "Prompt Tokens"
+              },
+              {
+                "name": "completion_tokens",
+                "type": "text",
+                "label": "Completion Tokens"
+              },
+              {
+                "name": "total_tokens",
+                "type": "number",
+                "label": "Total Tokens"
+              },
+              {
+                "name": "prompt_tokens_details",
+                "spec": [
+                  {
+                    "name": "cached_tokens",
+                    "type": "uinteger",
+                    "label": "Cached Tokens"
+                  },
+                  {
+                    "name": "text_tokens",
+                    "type": "uinteger",
+                    "label": "Text Tokens"
+                  },
+                  {
+                    "name": "image_tokens",
+                    "type": "uinteger",
+                    "label": "Image Tokens"
+                  },
+                  {
+                    "name": "audio_tokens",
+                    "type": "uinteger",
+                    "label": "Audio Tokens"
+                  }
+                ],
+                "type": "collection",
+                "label": "Prompt Tokens Details"
+              },
+              {
+                "name": "completion_tokens_details",
+                "spec": [
+                  {
+                    "name": "reasoning_tokens",
+                    "type": "uinteger",
+                    "label": "Reasoning Tokens"
+                  },
+                  {
+                    "name": "text_tokens",
+                    "type": "uinteger",
+                    "label": "Text Tokens"
+                  },
+                  {
+                    "name": "audio_tokens",
+                    "type": "uinteger",
+                    "label": "Audio Tokens"
+                  },
+                  {
+                    "name": "accepted_prediction_tokens",
+                    "type": "uinteger",
+                    "label": "Accepted Prediction Tokens"
+                  },
+                  {
+                    "name": "rejected_prediction_tokens",
+                    "type": "uinteger",
+                    "label": "Rejected Prediction Tokens"
+                  }
+                ],
+                "type": "collection",
+                "label": "Completion Tokens Details"
+              }
+            ],
+            "type": "collection",
+            "label": "Usage"
+          },
+          {
+            "name": "service_tier",
+            "type": "text",
+            "label": "Service Tier"
+          },
+          {
+            "name": "system_fingerprint",
+            "type": "text",
+            "label": "System Fingerprint"
+          }
+        ]
+      }
+    },
+    {
+      "id": 31,
+      "module": "regexp:Replace",
+      "version": 1,
+      "parameters": {},
+      "mapper": {
+        "text": "{{30.result}}",
+        "value": " ",
+        "global": true,
+        "pattern": "[\\r\\n]+",
+        "multiline": false,
+        "sensitive": false,
+        "singleline": false
+      },
+      "metadata": {
+        "designer": {
+          "x": 600,
+          "y": 450
+        },
+        "restore": {
+          "expect": {
+            "global": {
+              "mode": "chose"
+            },
+            "multiline": {
+              "mode": "chose"
+            },
+            "sensitive": {
+              "mode": "chose"
+            },
+            "singleline": {
+              "mode": "chose"
+            }
+          }
+        },
+        "expect": [
+          {
+            "name": "pattern",
+            "type": "text",
+            "label": "Pattern",
+            "required": true
+          },
+          {
+            "name": "value",
+            "type": "text",
+            "label": "New value"
+          },
+          {
+            "name": "global",
+            "type": "boolean",
+            "label": "Global match",
+            "required": true
+          },
+          {
+            "name": "sensitive",
+            "type": "boolean",
+            "label": "Case sensitive",
+            "required": true
+          },
+          {
+            "name": "multiline",
+            "type": "boolean",
+            "label": "Multiline",
+            "required": true
+          },
+          {
+            "name": "singleline",
+            "type": "boolean",
+            "label": "Singleline",
+            "required": true
+          },
+          {
+            "name": "text",
+            "type": "text",
+            "label": "Text"
+          }
+        ]
+      }
+    },
+    {
+      "id": 32,
+      "module": "http:ActionSendData",
+      "version": 3,
+      "parameters": {
+        "handleErrors": true,
+        "useNewZLibDeCompress": true
+      },
+      "mapper": {
+        "ca": "",
+        "qs": [],
+        "url": "https://api.vapi.ai/call/",
+        "data": "{ \n \"assistantId\": \"{ASSISTANT_ID}\", \n \"phoneNumberId\": \"{PHONE_NUMBER_ID}\", \n \"customer\": { \n \"number\": \"{{1.`No Telepon`}}\"\n },\n \"assistantOverrides\": { \n  \"variableValues\": { \n   \"firstName\": \"{{1.`Nama Depan`}}\", \n   \"company\": \"{{1.Perusahaan}}\", \n   \"companyResearch\": \"{{31.text}}\" \n  }\n } \n}",
+        "gzip": true,
+        "method": "post",
+        "headers": [
+          {
+            "name": "Authorization",
+            "value": "Bearer {UUID}"
+          },
+          {
+            "name": "content-type",
+            "value": "application/json"
+          }
+        ],
+        "timeout": "",
+        "useMtls": false,
+        "authPass": "{PASSWORD}",
+        "authUser": "{USERNAME}",
+        "bodyType": "raw",
+        "contentType": "application/json",
+        "serializeUrl": false,
+        "shareCookies": false,
+        "parseResponse": true,
+        "followRedirect": true,
+        "useQuerystring": false,
+        "followAllRedirects": false,
+        "rejectUnauthorized": true
+      },
+      "metadata": {
+        "designer": {
+          "x": 900,
+          "y": 450
+        },
+        "restore": {
+          "expect": {
+            "qs": {
+              "mode": "chose"
+            },
+            "method": {
+              "mode": "chose",
+              "label": "POST"
+            },
+            "headers": {
+              "mode": "chose",
+              "items": [
+                null,
+                null
+              ]
+            },
+            "bodyType": {
+              "label": "Raw"
+            },
+            "contentType": {
+              "label": "JSON (application/json)"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "handleErrors",
+            "type": "boolean",
+            "label": "Evaluate all states as errors (except for 2xx and 3xx )",
+            "required": true
+          },
+          {
+            "name": "useNewZLibDeCompress",
+            "type": "hidden"
+          }
+        ],
+        "expect": [
+          {
+            "name": "url",
+            "type": "url",
+            "label": "URL",
+            "required": true
+          },
+          {
+            "name": "serializeUrl",
+            "type": "boolean",
+            "label": "Serialize URL",
+            "required": true
+          },
+          {
+            "name": "method",
+            "type": "select",
+            "label": "Method",
+            "required": true,
+            "validate": {
+              "enum": [
+                "get",
+                "head",
+                "post",
+                "put",
+                "patch",
+                "delete",
+                "options"
+              ]
+            }
+          },
+          {
+            "name": "headers",
+            "spec": [
+              {
+                "name": "name",
+                "type": "text",
+                "label": "Name",
+                "required": true
+              },
+              {
+                "name": "value",
+                "type": "text",
+                "label": "Value"
+              }
+            ],
+            "type": "array",
+            "label": "Headers"
+          },
+          {
+            "name": "qs",
+            "spec": [
+              {
+                "name": "name",
+                "type": "text",
+                "label": "Name",
+                "required": true
+              },
+              {
+                "name": "value",
+                "type": "text",
+                "label": "Value"
+              }
+            ],
+            "type": "array",
+            "label": "Query String"
+          },
+          {
+            "name": "bodyType",
+            "type": "select",
+            "label": "Body type",
+            "validate": {
+              "enum": [
+                "raw",
+                "x_www_form_urlencoded",
+                "multipart_form_data"
+              ]
+            }
+          },
+          {
+            "name": "parseResponse",
+            "type": "boolean",
+            "label": "Parse response",
+            "required": true
+          },
+          {
+            "name": "authUser",
+            "type": "text",
+            "label": "User name"
+          },
+          {
+            "name": "authPass",
+            "type": "password",
+            "label": "Password"
+          },
+          {
+            "name": "timeout",
+            "type": "uinteger",
+            "label": "Timeout",
+            "validate": {
+              "max": 300,
+              "min": 1
+            }
+          },
+          {
+            "name": "shareCookies",
+            "type": "boolean",
+            "label": "Share cookies with other HTTP modules",
+            "required": true
+          },
+          {
+            "name": "ca",
+            "type": "cert",
+            "label": "Self-signed certificate"
+          },
+          {
+            "name": "rejectUnauthorized",
+            "type": "boolean",
+            "label": "Reject connections that are using unverified (self-signed) certificates",
+            "required": true
+          },
+          {
+            "name": "followRedirect",
+            "type": "boolean",
+            "label": "Follow redirect",
+            "required": true
+          },
+          {
+            "name": "useQuerystring",
+            "type": "boolean",
+            "label": "Disable serialization of multiple same query string keys as arrays",
+            "required": true
+          },
+          {
+            "name": "gzip",
+            "type": "boolean",
+            "label": "Request compressed content",
+            "required": true
+          },
+          {
+            "name": "useMtls",
+            "type": "boolean",
+            "label": "Use Mutual TLS",
+            "required": true
+          },
+          {
+            "name": "contentType",
+            "type": "select",
+            "label": "Content type",
+            "validate": {
+              "enum": [
+                "text/plain",
+                "application/json",
+                "application/xml",
+                "text/xml",
+                "text/html",
+                "custom"
+              ]
+            }
+          },
+          {
+            "name": "data",
+            "type": "buffer",
+            "label": "Request content"
+          },
+          {
+            "name": "followAllRedirects",
+            "type": "boolean",
+            "label": "Follow all redirect",
+            "required": true
+          }
+        ]
+      }
+    },
+    {
+      "id": 33,
+      "module": "util:FunctionSleep",
+      "version": 1,
+      "parameters": {},
+      "mapper": {
+        "duration": "300"
+      },
+      "metadata": {
+        "designer": {
+          "x": 1200,
+          "y": 450
+        },
+        "restore": {},
+        "expect": [
+          {
+            "name": "duration",
+            "type": "uinteger",
+            "label": "Delay",
+            "required": true,
+            "validate": {
+              "max": 300,
+              "min": 1
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": 34,
+      "module": "http:ActionSendData",
+      "version": 3,
+      "parameters": {
+        "handleErrors": true,
+        "useNewZLibDeCompress": true
+      },
+      "mapper": {
+        "ca": "",
+        "qs": [],
+        "url": "https://api.vapi.ai/call/{{32.data.id}}",
+        "gzip": true,
+        "method": "get",
+        "headers": [
+          {
+            "name": "Authorization",
+            "value": "Bearer {UUID}"
+          }
+        ],
+        "timeout": "",
+        "useMtls": false,
+        "authPass": "{PASSWORD}",
+        "authUser": "{USERNAME}",
+        "bodyType": "",
+        "serializeUrl": false,
+        "shareCookies": false,
+        "parseResponse": true,
+        "followRedirect": true,
+        "useQuerystring": false,
+        "followAllRedirects": false,
+        "rejectUnauthorized": true
+      },
+      "metadata": {
+        "designer": {
+          "x": 1500,
+          "y": 450
+        },
+        "restore": {
+          "expect": {
+            "qs": {
+              "mode": "chose"
+            },
+            "method": {
+              "mode": "chose",
+              "label": "GET"
+            },
+            "headers": {
+              "mode": "chose",
+              "items": [
+                null
+              ]
+            },
+            "bodyType": {
+              "label": "Empty"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "handleErrors",
+            "type": "boolean",
+            "label": "Evaluate all states as errors (except for 2xx and 3xx )",
+            "required": true
+          },
+          {
+            "name": "useNewZLibDeCompress",
+            "type": "hidden"
+          }
+        ],
+        "expect": [
+          {
+            "name": "url",
+            "type": "url",
+            "label": "URL",
+            "required": true
+          },
+          {
+            "name": "serializeUrl",
+            "type": "boolean",
+            "label": "Serialize URL",
+            "required": true
+          },
+          {
+            "name": "method",
+            "type": "select",
+            "label": "Method",
+            "required": true,
+            "validate": {
+              "enum": [
+                "get",
+                "head",
+                "post",
+                "put",
+                "patch",
+                "delete",
+                "options"
+              ]
+            }
+          },
+          {
+            "name": "headers",
+            "spec": [
+              {
+                "name": "name",
+                "type": "text",
+                "label": "Name",
+                "required": true
+              },
+              {
+                "name": "value",
+                "type": "text",
+                "label": "Value"
+              }
+            ],
+            "type": "array",
+            "label": "Headers"
+          },
+          {
+            "name": "qs",
+            "spec": [
+              {
+                "name": "name",
+                "type": "text",
+                "label": "Name",
+                "required": true
+              },
+              {
+                "name": "value",
+                "type": "text",
+                "label": "Value"
+              }
+            ],
+            "type": "array",
+            "label": "Query String"
+          },
+          {
+            "name": "bodyType",
+            "type": "select",
+            "label": "Body type",
+            "validate": {
+              "enum": [
+                "raw",
+                "x_www_form_urlencoded",
+                "multipart_form_data"
+              ]
+            }
+          },
+          {
+            "name": "parseResponse",
+            "type": "boolean",
+            "label": "Parse response",
+            "required": true
+          },
+          {
+            "name": "authUser",
+            "type": "text",
+            "label": "User name"
+          },
+          {
+            "name": "authPass",
+            "type": "password",
+            "label": "Password"
+          },
+          {
+            "name": "timeout",
+            "type": "uinteger",
+            "label": "Timeout",
+            "validate": {
+              "max": 300,
+              "min": 1
+            }
+          },
+          {
+            "name": "shareCookies",
+            "type": "boolean",
+            "label": "Share cookies with other HTTP modules",
+            "required": true
+          },
+          {
+            "name": "ca",
+            "type": "cert",
+            "label": "Self-signed certificate"
+          },
+          {
+            "name": "rejectUnauthorized",
+            "type": "boolean",
+            "label": "Reject connections that are using unverified (self-signed) certificates",
+            "required": true
+          },
+          {
+            "name": "followRedirect",
+            "type": "boolean",
+            "label": "Follow redirect",
+            "required": true
+          },
+          {
+            "name": "useQuerystring",
+            "type": "boolean",
+            "label": "Disable serialization of multiple same query string keys as arrays",
+            "required": true
+          },
+          {
+            "name": "gzip",
+            "type": "boolean",
+            "label": "Request compressed content",
+            "required": true
+          },
+          {
+            "name": "useMtls",
+            "type": "boolean",
+            "label": "Use Mutual TLS",
+            "required": true
+          },
+          {
+            "name": "followAllRedirects",
+            "type": "boolean",
+            "label": "Follow all redirect",
+            "required": true
+          }
+        ]
+      }
+    },
+    {
+      "id": 35,
+      "module": "builtin:BasicRouter",
+      "version": 1,
+      "mapper": null,
+      "metadata": {
+        "designer": {
+          "x": 1800,
+          "y": 450
+        }
+      },
+      "routes": [
+        {
+          "flow": [
+            {
+              "id": 36,
+              "module": "builtin:BasicRouter",
+              "version": 1,
+              "filter": {
+                "name": "No Answer",
+                "conditions": [
+                  [
+                    {
+                      "a": "{{34.data.endedReason}}",
+                      "b": "customer-ended-call",
+                      "o": "text:notequal"
+                    }
+                  ]
+                ]
+              },
+              "mapper": null,
+              "metadata": {
+                "designer": {
+                  "x": 2100,
+                  "y": 150
+                }
+              },
+              "routes": [
+                {
+                  "flow": [
+                    {
+                      "id": 37,
+                      "module": "google-email:ActionSendEmail",
+                      "version": 2,
+                      "parameters": {
+                        "account": "{GOOGLE_ACCOUNT_ID}"
+                      },
+                      "mapper": {
+                        "from": "[REDACTED_EMAIL]",
+                        "to": [
+                          "[REDACTED_EMAIL]"
+                        ],
+                        "subject": "{{1.`Nama Depan`}} mari bicarakan tentang tujuan anda",
+                        "html": "halo {{1.`Nama Depan`}}, kami menerima permintaan untuk membantu {{1.Perusahaan}} dan kami sangat berharap untuk berdiskusi segera. Silahkan pilih jadwal anda disini https://calendly.com/jansentanlim/intro-call",
+                        "attachments": [],
+                        "cc": [],
+                        "bcc": []
+                      },
+                      "metadata": {
+                        "designer": {
+                          "x": 2400,
+                          "y": 0
+                        },
+                        "restore": {
+                          "parameters": {
+                            "account": "{GOOGLE_ACCOUNT_ID}"
+                          },
+                          "expect": {
+                            "to": "[REDACTED_EMAIL]",
+                            "attachments": {
+                              "mode": "chose"
+                            },
+                            "cc": "[REDACTED_EMAIL]",
+                            "bcc": "[REDACTED_EMAIL]"
+                          }
+                        },
+                        "parameters": [
+                          {
+                            "name": "account",
+                            "type": "account:google-restricted",
+                            "label": "Connection",
+                            "required": true
+                          }
+                        ],
+                        "expect": [
+                          {
+                            "name": "from",
+                            "type": "text",
+                            "label": "From"
+                          },
+                          {
+                            "name": "to",
+                            "type": "array",
+                            "label": "To",
+                            "required": true,
+                            "spec": {
+                              "name": "value",
+                              "type": "email",
+                              "label": "Email address",
+                              "required": true
+                            }
+                          },
+                          {
+                            "name": "subject",
+                            "type": "text",
+                            "label": "Subject"
+                          },
+                          {
+                            "name": "html",
+                            "type": "text",
+                            "label": "Content"
+                          },
+                          {
+                            "name": "attachments",
+                            "type": "array",
+                            "label": "Attachments",
+                            "spec": [
+                              {
+                                "name": "fileName",
+                                "label": "File name",
+                                "type": "filename",
+                                "required": true,
+                                "semantic": "file:name"
+                              },
+                              {
+                                "name": "data",
+                                "label": "Data",
+                                "type": "buffer",
+                                "required": true,
+                                "semantic": "file:data"
+                              },
+                              {
+                                "name": "cid",
+                                "label": "Content-ID",
+                                "type": "text"
+                              }
+                            ]
+                          },
+                          {
+                            "name": "cc",
+                            "type": "array",
+                            "label": "Copy recipient",
+                            "spec": {
+                              "type": "email",
+                              "label": "Email address",
+                              "name": "value"
+                            }
+                          },
+                          {
+                            "name": "bcc",
+                            "type": "array",
+                            "label": "Blind copy recipient",
+                            "spec": {
+                              "type": "email",
+                              "label": "Email address",
+                              "name": "value"
+                            }
+                          }
+                        ]
+                      }
+                    },
+                    {
+                      "id": 38,
+                      "module": "airtable:ActionUpdateRecords",
+                      "version": 3,
+                      "parameters": {
+                        "__IMTCONN__": "{CONNECTION_ID}"
+                      },
+                      "mapper": {
+                        "base": "{AIRTABLE_BASE_ID}",
+                        "typecast": false,
+                        "useColumnId": false,
+                        "table": "{AIRTABLE_TABLE_ID}",
+                        "id": "{{1.id}}",
+                        "record": {
+                          "fldsSjwNJh2Nl6WLK": "{{now}}"
+                        }
+                      },
+                      "metadata": {
+                        "designer": {
+                          "x": 2700,
+                          "y": 0
+                        },
+                        "restore": {
+                          "parameters": {
+                            "__IMTCONN__": "{CONNECTION_ID}"
+                          },
+                          "expect": {
+                            "base": {
+                              "label": "Lead Base"
+                            },
+                            "typecast": {
+                              "mode": "chose"
+                            },
+                            "useColumnId": {
+                              "mode": "chose"
+                            },
+                            "table": {
+                              "label": "Lead Contacts"
+                            },
+                            "record": {
+                              "nested": {
+                                "fldEhxN9olEcL9RDj": {
+                                  "mode": "chose"
+                                }
+                              }
+                            }
+                          }
+                        },
+                        "parameters": [
+                          {
+                            "name": "__IMTCONN__",
+                            "type": "account:airtable3,airtable2",
+                            "label": "Connection",
+                            "required": true
+                          }
+                        ],
+                        "expect": [
+                          {
+                            "name": "base",
+                            "type": "select",
+                            "label": "Base",
+                            "required": true
+                          },
+                          {
+                            "name": "typecast",
+                            "type": "boolean",
+                            "label": "Smart links",
+                            "required": true
+                          },
+                          {
+                            "name": "useColumnId",
+                            "type": "boolean",
+                            "label": "Use Column ID",
+                            "required": true
+                          },
+                          {
+                            "name": "table",
+                            "type": "select",
+                            "label": "Table",
+                            "required": true
+                          },
+                          {
+                            "name": "id",
+                            "type": "text",
+                            "label": "Record ID",
+                            "required": true
+                          },
+                          {
+                            "name": "record",
+                            "type": "collection",
+                            "label": "Record",
+                            "spec": [
+                              {
+                                "name": "fldINWwCZbHISL0fo",
+                                "type": "text",
+                                "label": "Nama Depan"
+                              },
+                              {
+                                "name": "fld7OoSTFDjy3atRj",
+                                "type": "text",
+                                "label": "Nama Belakang"
+                              },
+                              {
+                                "name": "fldEAVmCup2JYTZZP",
+                                "type": "text",
+                                "label": "Email"
+                              },
+                              {
+                                "name": "fldwQ24L7kHD3dCIY",
+                                "type": "text",
+                                "label": "No Telepon"
+                              },
+                              {
+                                "name": "fldUstMxtEzzJiEw7",
+                                "type": "text",
+                                "label": "Perusahaan"
+                              },
+                              {
+                                "name": "fld9DfZILqWSHJbsg",
+                                "type": "number",
+                                "label": "Budget"
+                              },
+                              {
+                                "name": "fldJqKzYMkZ79E691",
+                                "type": "text",
+                                "label": "Note"
+                              },
+                              {
+                                "name": "fldsSjwNJh2Nl6WLK",
+                                "type": "date",
+                                "label": "Contacted on",
+                                "time": false
+                              },
+                              {
+                                "name": "fldy6gSGftf4xND9Q",
+                                "type": "text",
+                                "label": "Call Summary"
+                              },
+                              {
+                                "name": "fldEhxN9olEcL9RDj",
+                                "type": "boolean",
+                                "label": "interested"
+                              },
+                              {
+                                "name": "fldCETYIWQ6GyVFgo",
+                                "type": "date",
+                                "label": "Proposal Sent on",
+                                "time": false
+                              }
+                            ]
+                          }
+                        ],
+                        "interface": [
+                          {
+                            "name": "id",
+                            "type": "text",
+                            "label": "ID"
+                          },
+                          {
+                            "name": "createdTime",
+                            "type": "date",
+                            "label": "Created Time"
+                          },
+                          {
+                            "name": "Nama Depan",
+                            "label": "Nama Depan",
+                            "type": "text"
+                          },
+                          {
+                            "name": "Nama Belakang",
+                            "label": "Nama Belakang",
+                            "type": "text"
+                          },
+                          {
+                            "name": "Email",
+                            "label": "Email",
+                            "type": "text"
+                          },
+                          {
+                            "name": "No Telepon",
+                            "label": "No Telepon",
+                            "type": "text"
+                          },
+                          {
+                            "name": "Perusahaan",
+                            "label": "Perusahaan",
+                            "type": "text"
+                          },
+                          {
+                            "name": "Budget",
+                            "label": "Budget",
+                            "type": "number"
+                          },
+                          {
+                            "name": "Note",
+                            "label": "Note",
+                            "type": "text",
+                            "multiline": true
+                          },
+                          {
+                            "name": "Created on",
+                            "label": "Created on",
+                            "type": "date"
+                          },
+                          {
+                            "name": "Qualification",
+                            "label": "Qualification",
+                            "type": "text"
+                          },
+                          {
+                            "name": "Message",
+                            "label": "Message",
+                            "type": "text"
+                          },
+                          {
+                            "name": "Contacted on",
+                            "label": "Contacted on",
+                            "type": "date",
+                            "time": false
+                          },
+                          {
+                            "name": "Call Summary",
+                            "label": "Call Summary",
+                            "type": "text",
+                            "multiline": true
+                          },
+                          {
+                            "name": "interested",
+                            "label": "interested",
+                            "type": "boolean"
+                          },
+                          {
+                            "name": "Proposal Sent on",
+                            "label": "Proposal Sent on",
+                            "type": "date",
+                            "time": false
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                },
+                {
+                  "flow": [
+                    {
+                      "id": 39,
+                      "module": "regexp:Parser",
+                      "version": 1,
+                      "parameters": {
+                        "pattern": "\"value\"\\s*:\\s*\"([^\"]+)\"",
+                        "global": false,
+                        "sensitive": true,
+                        "multiline": false,
+                        "singleline": false,
+                        "continueWhenNoRes": false
+                      },
+                      "mapper": {
+                        "text": "{{1.Message}}"
+                      },
+                      "metadata": {
+                        "designer": {
+                          "x": 2400,
+                          "y": 300
+                        },
+                        "restore": {},
+                        "parameters": [
+                          {
+                            "name": "pattern",
+                            "type": "text",
+                            "label": "Pattern",
+                            "required": true
+                          },
+                          {
+                            "name": "global",
+                            "type": "boolean",
+                            "label": "Global match",
+                            "required": true
+                          },
+                          {
+                            "name": "sensitive",
+                            "type": "boolean",
+                            "label": "Case sensitive",
+                            "required": true
+                          },
+                          {
+                            "name": "multiline",
+                            "type": "boolean",
+                            "label": "Multiline",
+                            "required": true
+                          },
+                          {
+                            "name": "singleline",
+                            "type": "boolean",
+                            "label": "Singleline",
+                            "required": true
+                          },
+                          {
+                            "name": "continueWhenNoRes",
+                            "type": "boolean",
+                            "label": "Continue the execution of the route even if the module finds no matches",
+                            "required": true
+                          }
+                        ],
+                        "expect": [
+                          {
+                            "name": "text",
+                            "type": "text",
+                            "label": "Text"
+                          }
+                        ],
+                        "interface": [
+                          {
+                            "type": "text",
+                            "name": "$1",
+                            "label": "$1"
+                          }
+                        ]
+                      }
+                    },
+                    {
+                      "id": 40,
+                      "module": "google-email:ActionSendEmail",
+                      "version": 2,
+                      "parameters": {
+                        "account": "{GOOGLE_ACCOUNT_ID}"
+                      },
+                      "mapper": {
+                        "from": "[REDACTED_EMAIL]",
+                        "to": [
+                          "[REDACTED_EMAIL]"
+                        ],
+                        "subject": "calon yang qualified :{{1.Perusahaan}}",
+                        "html": "tolong di follow up {{1.`Nama Depan`}} dari {{1.Perusahaan}}.{{39.`$1`}}",
+                        "attachments": [],
+                        "cc": [],
+                        "bcc": []
+                      },
+                      "metadata": {
+                        "designer": {
+                          "x": 2700,
+                          "y": 300
+                        },
+                        "restore": {
+                          "parameters": {
+                            "account": "{GOOGLE_ACCOUNT_ID}"
+                          },
+                          "expect": {
+                            "to": "[REDACTED_EMAIL]",
+                            "attachments": {
+                              "mode": "chose"
+                            },
+                            "cc": "[REDACTED_EMAIL]",
+                            "bcc": "[REDACTED_EMAIL]"
+                          }
+                        },
+                        "parameters": [
+                          {
+                            "name": "account",
+                            "type": "account:google-restricted",
+                            "label": "Connection",
+                            "required": true
+                          }
+                        ],
+                        "expect": [
+                          {
+                            "name": "from",
+                            "type": "text",
+                            "label": "From"
+                          },
+                          {
+                            "name": "to",
+                            "type": "array",
+                            "label": "To",
+                            "required": true,
+                            "spec": {
+                              "name": "value",
+                              "type": "email",
+                              "label": "Email address",
+                              "required": true
+                            }
+                          },
+                          {
+                            "name": "subject",
+                            "type": "text",
+                            "label": "Subject"
+                          },
+                          {
+                            "name": "html",
+                            "type": "text",
+                            "label": "Content"
+                          },
+                          {
+                            "name": "attachments",
+                            "type": "array",
+                            "label": "Attachments",
+                            "spec": [
+                              {
+                                "name": "fileName",
+                                "label": "File name",
+                                "type": "filename",
+                                "required": true,
+                                "semantic": "file:name"
+                              },
+                              {
+                                "name": "data",
+                                "label": "Data",
+                                "type": "buffer",
+                                "required": true,
+                                "semantic": "file:data"
+                              },
+                              {
+                                "name": "cid",
+                                "label": "Content-ID",
+                                "type": "text"
+                              }
+                            ]
+                          },
+                          {
+                            "name": "cc",
+                            "type": "array",
+                            "label": "Copy recipient",
+                            "spec": {
+                              "type": "email",
+                              "label": "Email address",
+                              "name": "value"
+                            }
+                          },
+                          {
+                            "name": "bcc",
+                            "type": "array",
+                            "label": "Blind copy recipient",
+                            "spec": {
+                              "type": "email",
+                              "label": "Email address",
+                              "name": "value"
+                            }
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "flow": [
+            {
+              "id": 41,
+              "module": "builtin:BasicRouter",
+              "version": 1,
+              "filter": {
+                "name": "Answer",
+                "conditions": [
+                  [
+                    {
+                      "a": "{{34.data.endedReason}}",
+                      "b": "customer-ended-call",
+                      "o": "text:equal"
+                    }
+                  ]
+                ]
+              },
+              "mapper": null,
+              "metadata": {
+                "designer": {
+                  "x": 2100,
+                  "y": 750
+                }
+              },
+              "routes": [
+                {
+                  "flow": [
+                    {
+                      "id": 42,
+                      "module": "airtable:ActionUpdateRecords",
+                      "version": 3,
+                      "parameters": {
+                        "__IMTCONN__": "{CONNECTION_ID}"
+                      },
+                      "filter": {
+                        "name": "Interested",
+                        "conditions": [
+                          [
+                            {
+                              "a": "{{34.data.analysis.successEvaluation}}",
+                              "b": "true",
+                              "o": "text:equal"
+                            }
+                          ]
+                        ]
+                      },
+                      "mapper": {
+                        "base": "{AIRTABLE_BASE_ID}",
+                        "typecast": false,
+                        "useColumnId": false,
+                        "table": "{AIRTABLE_TABLE_ID}",
+                        "id": "{{1.id}}",
+                        "record": {
+                          "fldsSjwNJh2Nl6WLK": "{{now}}",
+                          "fldy6gSGftf4xND9Q": "{{34.data.summary}}",
+                          "fldEhxN9olEcL9RDj": true
+                        }
+                      },
+                      "metadata": {
+                        "designer": {
+                          "x": 2400,
+                          "y": 600
+                        },
+                        "restore": {
+                          "parameters": {
+                            "__IMTCONN__": "{CONNECTION_ID}"
+                          },
+                          "expect": {
+                            "base": {
+                              "label": "Lead Base"
+                            },
+                            "typecast": {
+                              "mode": "chose"
+                            },
+                            "useColumnId": {
+                              "mode": "chose"
+                            },
+                            "table": {
+                              "label": "Lead Contacts"
+                            },
+                            "record": {
+                              "nested": {
+                                "fldEhxN9olEcL9RDj": {
+                                  "mode": "chose"
+                                }
+                              }
+                            }
+                          }
+                        },
+                        "parameters": [
+                          {
+                            "name": "__IMTCONN__",
+                            "type": "account:airtable3,airtable2",
+                            "label": "Connection",
+                            "required": true
+                          }
+                        ],
+                        "expect": [
+                          {
+                            "name": "base",
+                            "type": "select",
+                            "label": "Base",
+                            "required": true
+                          },
+                          {
+                            "name": "typecast",
+                            "type": "boolean",
+                            "label": "Smart links",
+                            "required": true
+                          },
+                          {
+                            "name": "useColumnId",
+                            "type": "boolean",
+                            "label": "Use Column ID",
+                            "required": true
+                          },
+                          {
+                            "name": "table",
+                            "type": "select",
+                            "label": "Table",
+                            "required": true
+                          },
+                          {
+                            "name": "id",
+                            "type": "text",
+                            "label": "Record ID",
+                            "required": true
+                          },
+                          {
+                            "name": "record",
+                            "type": "collection",
+                            "label": "Record",
+                            "spec": [
+                              {
+                                "name": "fldINWwCZbHISL0fo",
+                                "type": "text",
+                                "label": "Nama Depan"
+                              },
+                              {
+                                "name": "fld7OoSTFDjy3atRj",
+                                "type": "text",
+                                "label": "Nama Belakang"
+                              },
+                              {
+                                "name": "fldEAVmCup2JYTZZP",
+                                "type": "text",
+                                "label": "Email"
+                              },
+                              {
+                                "name": "fldwQ24L7kHD3dCIY",
+                                "type": "text",
+                                "label": "No Telepon"
+                              },
+                              {
+                                "name": "fldUstMxtEzzJiEw7",
+                                "type": "text",
+                                "label": "Perusahaan"
+                              },
+                              {
+                                "name": "fld9DfZILqWSHJbsg",
+                                "type": "number",
+                                "label": "Budget"
+                              },
+                              {
+                                "name": "fldJqKzYMkZ79E691",
+                                "type": "text",
+                                "label": "Note"
+                              },
+                              {
+                                "name": "fldsSjwNJh2Nl6WLK",
+                                "type": "date",
+                                "label": "Contacted on",
+                                "time": false
+                              },
+                              {
+                                "name": "fldy6gSGftf4xND9Q",
+                                "type": "text",
+                                "label": "Call Summary"
+                              },
+                              {
+                                "name": "fldEhxN9olEcL9RDj",
+                                "type": "boolean",
+                                "label": "interested"
+                              },
+                              {
+                                "name": "fldCETYIWQ6GyVFgo",
+                                "type": "date",
+                                "label": "Proposal Sent on",
+                                "time": false
+                              }
+                            ]
+                          }
+                        ],
+                        "interface": [
+                          {
+                            "name": "id",
+                            "type": "text",
+                            "label": "ID"
+                          },
+                          {
+                            "name": "createdTime",
+                            "type": "date",
+                            "label": "Created Time"
+                          },
+                          {
+                            "name": "Nama Depan",
+                            "label": "Nama Depan",
+                            "type": "text"
+                          },
+                          {
+                            "name": "Nama Belakang",
+                            "label": "Nama Belakang",
+                            "type": "text"
+                          },
+                          {
+                            "name": "Email",
+                            "label": "Email",
+                            "type": "text"
+                          },
+                          {
+                            "name": "No Telepon",
+                            "label": "No Telepon",
+                            "type": "text"
+                          },
+                          {
+                            "name": "Perusahaan",
+                            "label": "Perusahaan",
+                            "type": "text"
+                          },
+                          {
+                            "name": "Budget",
+                            "label": "Budget",
+                            "type": "number"
+                          },
+                          {
+                            "name": "Note",
+                            "label": "Note",
+                            "type": "text",
+                            "multiline": true
+                          },
+                          {
+                            "name": "Created on",
+                            "label": "Created on",
+                            "type": "date"
+                          },
+                          {
+                            "name": "Qualification",
+                            "label": "Qualification",
+                            "type": "text"
+                          },
+                          {
+                            "name": "Message",
+                            "label": "Message",
+                            "type": "text"
+                          },
+                          {
+                            "name": "Contacted on",
+                            "label": "Contacted on",
+                            "type": "date",
+                            "time": false
+                          },
+                          {
+                            "name": "Call Summary",
+                            "label": "Call Summary",
+                            "type": "text",
+                            "multiline": true
+                          },
+                          {
+                            "name": "interested",
+                            "label": "interested",
+                            "type": "boolean"
+                          },
+                          {
+                            "name": "Proposal Sent on",
+                            "label": "Proposal Sent on",
+                            "type": "date",
+                            "time": false
+                          }
+                        ]
+                      }
+                    },
+                    {
+                      "id": 43,
+                      "module": "openai-gpt-3:CreateCompletion",
+                      "version": 1,
+                      "parameters": {
+                        "__IMTCONN__": "{CONNECTION_ID}"
+                      },
+                      "mapper": {
+                        "select": "chat",
+                        "temperature": "1",
+                        "top_p": "1",
+                        "n_completions": "1",
+                        "model": "o4-mini",
+                        "max_tokens": "2048",
+                        "messages": [
+                          {
+                            "role": "user",
+                            "content": "You are a sales expert generating content for a business proposal from Wisel AI — a boutique AI services agency that offers two services: \n1. AI Automation – Streamlining business operations using AI workflows. \n2. AI agents – Deploying conversational or task based AI Agents for customer interactions, support or sales\n\nClient Details: {{31.text}}\n\nCall Summary:  {{34.data.summary}}\n\nYour Task: \nbased on context above, which include research on the company and a summary for automated call with the client, decide whether the client need:\n- automation only\n- agents only\n- or both\n\nuser your judgments to identify the most relevant service and generate the proposal content accordingly\n\nthe pricing for service is:\nautomation : Rp. 2.500.000\nagent : 2.000.000\n\nThen create: \n{ \n \"Proposal.goals\": \"Summarize the client's main goals in 2-3 crisp sentences\", \n \"Proposal.services\": \"Describe which of Wisel AI services are being recommend and why (Automations, agent or both)\",\n \"Proposal.implementation\": \"Explain at high level how Wisel AI will deliver the recommend services\",\n \"Proposal.pricing\": \"- [Service 1 Name]: $price - Short 1 - line description\\n - [Service 2 Name]: $price - Short 1-line description (iff apllicable)\", \n\"Proposal.total\": \"Plain total ammount\" \n} \nEnsure the tone is helpful, professional and optimistic, it will be dropped directly into a proposal document for a prospective client",
+                            "imageDetail": "auto"
+                          }
+                        ],
+                        "response_format": "text"
+                      },
+                      "metadata": {
+                        "designer": {
+                          "x": 2700,
+                          "y": 600
+                        },
+                        "restore": {
+                          "parameters": {
+                            "__IMTCONN__": "{CONNECTION_ID}"
+                          },
+                          "expect": {
+                            "select": {
+                              "label": "Create a Chat Completion (GPT and o1 models)"
+                            },
+                            "logit_bias": {
+                              "mode": "chose"
+                            },
+                            "tool_choice": {
+                              "mode": "chose",
+                              "label": "Empty"
+                            },
+                            "stop": {
+                              "mode": "chose"
+                            },
+                            "additionalParameters": {
+                              "mode": "chose"
+                            },
+                            "model": {
+                              "mode": "chose",
+                              "label": "o4-mini (system)"
+                            },
+                            "messages": {
+                              "mode": "chose",
+                              "items": [
+                                {
+                                  "role": {
+                                    "mode": "chose",
+                                    "label": "User"
+                                  },
+                                  "imageInputType": {
+                                    "mode": "chose",
+                                    "label": "Empty"
+                                  },
+                                  "imageDetail": {
+                                    "mode": "chose",
+                                    "label": "Auto"
+                                  }
+                                }
+                              ]
+                            },
+                            "response_format": {
+                              "mode": "chose",
+                              "label": "Text"
+                            },
+                            "reasoning_effort": {
+                              "mode": "chose",
+                              "label": "Empty"
+                            }
+                          }
+                        },
+                        "parameters": [
+                          {
+                            "name": "__IMTCONN__",
+                            "type": "account:openai-gpt-3",
+                            "label": "Connection",
+                            "required": true
+                          }
+                        ],
+                        "expect": [
+                          {
+                            "name": "select",
+                            "type": "select",
+                            "label": "Select Method",
+                            "required": true,
+                            "validate": {
+                              "enum": [
+                                "chat",
+                                "prompt"
+                              ]
+                            }
+                          },
+                          {
+                            "name": "temperature",
+                            "type": "number",
+                            "label": "Temperature",
+                            "validate": {
+                              "max": 2,
+                              "min": 0
+                            }
+                          },
+                          {
+                            "name": "top_p",
+                            "type": "number",
+                            "label": "Top P",
+                            "validate": {
+                              "max": 1,
+                              "min": 0
+                            }
+                          },
+                          {
+                            "name": "n_completions",
+                            "type": "number",
+                            "label": "Number"
+                          },
+                          {
+                            "name": "frequency_penalty",
+                            "type": "number",
+                            "label": "Frequency Penalty",
+                            "validate": {
+                              "max": 2,
+                              "min": -2
+                            }
+                          },
+                          {
+                            "name": "presence_penalty",
+                            "type": "number",
+                            "label": "Presence Penalty",
+                            "validate": {
+                              "max": 2,
+                              "min": -2
+                            }
+                          },
+                          {
+                            "name": "logit_bias",
+                            "type": "array",
+                            "label": "Token Probability",
+                            "spec": {
+                              "spec": [
+                                {
+                                  "name": "token",
+                                  "type": "text",
+                                  "label": "Token ID",
+                                  "required": true
+                                },
+                                {
+                                  "name": "probability",
+                                  "type": "number",
+                                  "label": "Probability",
+                                  "required": true,
+                                  "validate": {
+                                    "max": 100,
+                                    "min": -100
+                                  }
+                                }
+                              ],
+                              "type": "collection",
+                              "label": "Token Probability",
+                              "name": "value"
+                            }
+                          },
+                          {
+                            "name": "seed",
+                            "type": "integer",
+                            "label": "Seed"
+                          },
+                          {
+                            "name": "tool_choice",
+                            "type": "select",
+                            "label": "Tool Choice",
+                            "validate": {
+                              "enum": [
+                                "none",
+                                "auto",
+                                "required"
+                              ]
+                            }
+                          },
+                          {
+                            "name": "stop",
+                            "type": "array",
+                            "label": "Stop Sequences",
+                            "validate": {
+                              "maxItems": 4
+                            },
+                            "spec": {
+                              "type": "text",
+                              "label": "Stop Sequence",
+                              "name": "value"
+                            }
+                          },
+                          {
+                            "name": "additionalParameters",
+                            "type": "array",
+                            "label": "Other Input Parameters",
+                            "spec": {
+                              "spec": [
+                                {
+                                  "name": "key",
+                                  "type": "text",
+                                  "label": "Parameter Name",
+                                  "required": true
+                                },
+                                {
+                                  "name": "type",
+                                  "type": "select",
+                                  "label": "Input Type",
+                                  "options": [
+                                    {
+                                      "label": "Text",
+                                      "value": "text",
+                                      "nested": [
+                                        {
+                                          "name": "value",
+                                          "type": "text",
+                                          "label": "Parameter Value"
+                                        }
+                                      ],
+                                      "default": true
+                                    },
+                                    {
+                                      "label": "Number",
+                                      "value": "number",
+                                      "nested": [
+                                        {
+                                          "name": "value",
+                                          "type": "number",
+                                          "label": "Parameter Value"
+                                        }
+                                      ]
+                                    },
+                                    {
+                                      "label": "Boolean",
+                                      "value": "boolean",
+                                      "nested": [
+                                        {
+                                          "name": "value",
+                                          "type": "boolean",
+                                          "label": "Parameter Value"
+                                        }
+                                      ]
+                                    },
+                                    {
+                                      "label": "Date",
+                                      "value": "date",
+                                      "nested": [
+                                        {
+                                          "name": "value",
+                                          "type": "date",
+                                          "label": "Parameter Value"
+                                        }
+                                      ]
+                                    },
+                                    {
+                                      "label": "Any",
+                                      "value": "any",
+                                      "nested": [
+                                        {
+                                          "name": "value",
+                                          "type": "any",
+                                          "label": "Parameter Value"
+                                        }
+                                      ]
+                                    }
+                                  ]
+                                }
+                              ],
+                              "type": "collection",
+                              "label": "Input Parameter",
+                              "name": "value"
+                            }
+                          },
+                          {
+                            "name": "model",
+                            "type": "select",
+                            "label": "Model",
+                            "required": true
+                          },
+                          {
+                            "name": "max_tokens",
+                            "type": "uinteger",
+                            "label": "Max Completion Tokens"
+                          },
+                          {
+                            "name": "messages",
+                            "type": "array",
+                            "label": "Messages",
+                            "required": true,
+                            "spec": {
+                              "label": "Message",
+                              "type": "collection",
+                              "spec": [
+                                {
+                                  "name": "role",
+                                  "type": "select",
+                                  "label": "Role",
+                                  "required": true,
+                                  "options": {
+                                    "store": [
+                                      {
+                                        "label": "User",
+                                        "value": "user",
+                                        "nested": [
+                                          {
+                                            "help": "Text content of the message on behalf of the selected __Role__.",
+                                            "name": "content",
+                                            "type": "text",
+                                            "label": "Text Content"
+                                          },
+                                          {
+                                            "name": "imageInputType",
+                                            "type": "select",
+                                            "label": "Image Input Type",
+                                            "mappable": false,
+                                            "options": [
+                                              {
+                                                "value": "url",
+                                                "label": "URL",
+                                                "nested": [
+                                                  {
+                                                    "name": "imageUrl",
+                                                    "label": "Image URL",
+                                                    "type": "url",
+                                                    "help": "Make sure to use a publicly accessible URL.\nYou can test if your image is publicly accessible by opening the link in an incognito tab."
+                                                  }
+                                                ]
+                                              },
+                                              {
+                                                "value": "file",
+                                                "label": "Image File",
+                                                "nested": [
+                                                  {
+                                                    "name": "imageFile",
+                                                    "label": "Image",
+                                                    "type": "collection",
+                                                    "spec": [
+                                                      {
+                                                        "name": "imageFilename",
+                                                        "type": "filename",
+                                                        "label": "Image Filename",
+                                                        "semantic": "file:name",
+                                                        "extension": [
+                                                          "jpg",
+                                                          "jpeg",
+                                                          "png",
+                                                          "webp",
+                                                          "gif"
+                                                        ],
+                                                        "help": "Accepted extensions: `.jpg`, `.jpeg`, `.png`, `.webp` and `.gif`."
+                                                      },
+                                                      {
+                                                        "name": "imageData",
+                                                        "type": "buffer",
+                                                        "label": "Image Data",
+                                                        "semantic": "file:data"
+                                                      }
+                                                    ]
+                                                  }
+                                                ]
+                                              }
+                                            ]
+                                          },
+                                          {
+                                            "name": "imageDetail",
+                                            "type": "select",
+                                            "label": "Image Detail",
+                                            "help": "Recommended value: `Auto`",
+                                            "options": [
+                                              {
+                                                "value": "auto",
+                                                "default": true,
+                                                "label": "Auto"
+                                              },
+                                              {
+                                                "value": "high",
+                                                "label": "High"
+                                              },
+                                              {
+                                                "value": "low",
+                                                "label": "Low"
+                                              }
+                                            ]
+                                          }
+                                        ]
+                                      },
+                                      {
+                                        "label": "Assistant",
+                                        "value": "assistant",
+                                        "nested": [
+                                          {
+                                            "help": "Text content of the message on behalf of the selected __Role__.",
+                                            "name": "content",
+                                            "type": "text",
+                                            "label": "Text Content"
+                                          },
+                                          {
+                                            "name": "tool_calls",
+                                            "label": "Tool Calls",
+                                            "type": "array",
+                                            "labels": {
+                                              "add": "Add tool call"
+                                            },
+                                            "mode": "edit",
+                                            "mappable": {
+                                              "help": "You can map the entire `Choices[]: Message.Tool Calls` array from a previous Create a Completion module here."
+                                            },
+                                            "spec": {
+                                              "label": "Tool Call",
+                                              "type": "collection",
+                                              "spec": [
+                                                {
+                                                  "name": "type",
+                                                  "type": "hidden",
+                                                  "default": "function"
+                                                },
+                                                {
+                                                  "name": "id",
+                                                  "type": "text",
+                                                  "label": "Tool call ID",
+                                                  "help": "Map this directly from the output of a previous **Create a Completion** module. Look for `Choices[]: Message.Tool Calls[]: ID`."
+                                                },
+                                                {
+                                                  "name": "function",
+                                                  "type": "collection",
+                                                  "label": "Function",
+                                                  "spec": [
+                                                    {
+                                                      "name": "name",
+                                                      "label": "Name",
+                                                      "type": "text",
+                                                      "required": true,
+                                                      "help": "The name of the function previously called."
+                                                    },
+                                                    {
+                                                      "name": "arguments",
+                                                      "label": "Arguments",
+                                                      "type": "text",
+                                                      "required": true,
+                                                      "help": "The arguments previously output by the AI."
+                                                    }
+                                                  ]
+                                                }
+                                              ]
+                                            }
+                                          }
+                                        ]
+                                      },
+                                      {
+                                        "label": "Developer / System",
+                                        "nested": [
+                                          {
+                                            "help": "Text content of the message on behalf of the selected __Role__.",
+                                            "name": "content",
+                                            "type": "text",
+                                            "label": "Text Content"
+                                          }
+                                        ],
+                                        "value": "system"
+                                      },
+                                      {
+                                        "label": "Tool",
+                                        "value": "tool",
+                                        "nested": [
+                                          {
+                                            "help": "The return of the function. This role should only be used when you have processed a previous function call and want to send the output of the function execution back to the AI.",
+                                            "name": "content",
+                                            "type": "text",
+                                            "label": "Text Content",
+                                            "required": true
+                                          },
+                                          {
+                                            "label": "Tool Call ID.",
+                                            "name": "tool_call_id",
+                                            "type": "text",
+                                            "required": true,
+                                            "help": "Map this directly from the output of a previous **Create a Completion** module. Look for `Choices[]: Message.Tool Calls[]: ID`."
+                                          }
+                                        ]
+                                      }
+                                    ]
+                                  }
+                                }
+                              ],
+                              "name": "value"
+                            }
+                          },
+                          {
+                            "name": "response_format",
+                            "type": "select",
+                            "label": "Response Format",
+                            "validate": {
+                              "enum": [
+                                "text",
+                                "json_object"
+                              ]
+                            }
+                          },
+                          {
+                            "name": "reasoning_effort",
+                            "type": "select",
+                            "label": "Reasoning Effort",
+                            "validate": {
+                              "enum": [
+                                "minimal",
+                                "low",
+                                "medium",
+                                "high"
+                              ]
+                            }
+                          }
+                        ],
+                        "interface": [
+                          {
+                            "name": "result",
+                            "type": "any",
+                            "label": "Result"
+                          },
+                          {
+                            "name": "id",
+                            "type": "text",
+                            "label": "ID"
+                          },
+                          {
+                            "name": "object",
+                            "type": "text",
+                            "label": "Object"
+                          },
+                          {
+                            "name": "created",
+                            "type": "date",
+                            "label": "Created"
+                          },
+                          {
+                            "name": "model",
+                            "type": "text",
+                            "label": "Model"
+                          },
+                          {
+                            "name": "choices",
+                            "spec": [
+                              {
+                                "name": "text",
+                                "type": "text",
+                                "label": "Text"
+                              },
+                              {
+                                "name": "index",
+                                "type": "number",
+                                "label": "Index"
+                              },
+                              {
+                                "name": "logprobs",
+                                "type": "text",
+                                "label": "Log Probs"
+                              },
+                              {
+                                "name": "finish_reason",
+                                "type": "text",
+                                "label": "Finish Reason"
+                              },
+                              {
+                                "name": "message",
+                                "spec": [
+                                  {
+                                    "name": "role",
+                                    "type": "text",
+                                    "label": "Role"
+                                  },
+                                  {
+                                    "name": "content",
+                                    "type": "text",
+                                    "label": "Content"
+                                  },
+                                  {
+                                    "name": "tool_calls",
+                                    "spec": [
+                                      {
+                                        "name": "id",
+                                        "type": "text",
+                                        "label": "ID"
+                                      },
+                                      {
+                                        "name": "type",
+                                        "type": "text",
+                                        "label": "Type"
+                                      },
+                                      {
+                                        "name": "function",
+                                        "spec": [
+                                          {
+                                            "name": "name",
+                                            "type": "text",
+                                            "label": "Name"
+                                          },
+                                          {
+                                            "name": "arguments",
+                                            "type": "text",
+                                            "label": "Arguments"
+                                          }
+                                        ],
+                                        "type": "collection",
+                                        "label": "Function"
+                                      }
+                                    ],
+                                    "type": "array",
+                                    "label": "Tool Calls"
+                                  },
+                                  {
+                                    "name": "refusal",
+                                    "type": "text",
+                                    "label": "Refusal"
+                                  },
+                                  {
+                                    "name": "annotations",
+                                    "spec": [
+                                      {
+                                        "name": "type",
+                                        "type": "text",
+                                        "label": "Type"
+                                      },
+                                      {
+                                        "name": "url_citation",
+                                        "spec": [
+                                          {
+                                            "name": "end_index",
+                                            "type": "number",
+                                            "label": "End Index"
+                                          },
+                                          {
+                                            "name": "start_index",
+                                            "type": "number",
+                                            "label": "Start Index"
+                                          },
+                                          {
+                                            "name": "title",
+                                            "type": "text",
+                                            "label": "Title"
+                                          },
+                                          {
+                                            "name": "url",
+                                            "type": "text",
+                                            "label": "URL"
+                                          }
+                                        ],
+                                        "type": "collection",
+                                        "label": "URL Citation"
+                                      }
+                                    ],
+                                    "type": "array",
+                                    "label": "Annotations"
+                                  }
+                                ],
+                                "type": "collection",
+                                "label": "Message"
+                              }
+                            ],
+                            "type": "array",
+                            "label": "Choices"
+                          },
+                          {
+                            "name": "usage",
+                            "spec": [
+                              {
+                                "name": "prompt_tokens",
+                                "type": "number",
+                                "label": "Prompt Tokens"
+                              },
+                              {
+                                "name": "completion_tokens",
+                                "type": "text",
+                                "label": "Completion Tokens"
+                              },
+                              {
+                                "name": "total_tokens",
+                                "type": "number",
+                                "label": "Total Tokens"
+                              },
+                              {
+                                "name": "prompt_tokens_details",
+                                "spec": [
+                                  {
+                                    "name": "cached_tokens",
+                                    "type": "uinteger",
+                                    "label": "Cached Tokens"
+                                  },
+                                  {
+                                    "name": "text_tokens",
+                                    "type": "uinteger",
+                                    "label": "Text Tokens"
+                                  },
+                                  {
+                                    "name": "image_tokens",
+                                    "type": "uinteger",
+                                    "label": "Image Tokens"
+                                  },
+                                  {
+                                    "name": "audio_tokens",
+                                    "type": "uinteger",
+                                    "label": "Audio Tokens"
+                                  }
+                                ],
+                                "type": "collection",
+                                "label": "Prompt Tokens Details"
+                              },
+                              {
+                                "name": "completion_tokens_details",
+                                "spec": [
+                                  {
+                                    "name": "reasoning_tokens",
+                                    "type": "uinteger",
+                                    "label": "Reasoning Tokens"
+                                  },
+                                  {
+                                    "name": "text_tokens",
+                                    "type": "uinteger",
+                                    "label": "Text Tokens"
+                                  },
+                                  {
+                                    "name": "audio_tokens",
+                                    "type": "uinteger",
+                                    "label": "Audio Tokens"
+                                  },
+                                  {
+                                    "name": "accepted_prediction_tokens",
+                                    "type": "uinteger",
+                                    "label": "Accepted Prediction Tokens"
+                                  },
+                                  {
+                                    "name": "rejected_prediction_tokens",
+                                    "type": "uinteger",
+                                    "label": "Rejected Prediction Tokens"
+                                  }
+                                ],
+                                "type": "collection",
+                                "label": "Completion Tokens Details"
+                              }
+                            ],
+                            "type": "collection",
+                            "label": "Usage"
+                          },
+                          {
+                            "name": "service_tier",
+                            "type": "text",
+                            "label": "Service Tier"
+                          },
+                          {
+                            "name": "system_fingerprint",
+                            "type": "text",
+                            "label": "System Fingerprint"
+                          }
+                        ]
+                      }
+                    },
+                    {
+                      "id": 44,
+                      "module": "json:ParseJSON",
+                      "version": 1,
+                      "parameters": {},
+                      "mapper": {
+                        "json": "{{43.choices[].message.content}}"
+                      },
+                      "metadata": {
+                        "designer": {
+                          "x": 3000,
+                          "y": 600
+                        },
+                        "restore": {},
+                        "parameters": [
+                          {
+                            "name": "type",
+                            "type": "udt",
+                            "label": "Data structure"
+                          }
+                        ],
+                        "expect": [
+                          {
+                            "name": "json",
+                            "type": "text",
+                            "label": "JSON string",
+                            "required": true
+                          }
+                        ]
+                      }
+                    },
+                    {
+                      "id": 45,
+                      "module": "pandadoc:createADocuments",
+                      "version": 1,
+                      "parameters": {
+                        "__IMTCONN__": "{CONNECTION_ID}"
+                      },
+                      "mapper": {
+                        "name": "Proposal{{42.Perusahaan}}",
+                        "template": "C2WrmjpL4Nq7sZFUFkgYnW",
+                        "send": true,
+                        "folder_uuid": null,
+                        "tokens": {
+                          "Client.Email": "{{42.Email}}",
+                          "Client.Company": "{{42.Perusahaan}}",
+                          "Client.FirstName": "{{42.`Nama Depan`}}",
+                          "Client.LastName": "{{42.`Nama Belakang`}}",
+                          "Proposal.goals": "{{44.`Proposal.goals`}}",
+                          "Proposal.implementation": "{{44.`Proposal.implementation`}}",
+                          "Proposal.pricing": "{{44.`Proposal.pricing`}}",
+                          "Proposal.service": "{{44.`Proposal.services`}}",
+                          "Proposal.total": "{{44.`Proposal.total`}}"
+                        },
+                        "fields": {},
+                        "subject": "Bapak/Ibu {{42.`Nama Depan`}}, berikut proposal dari Wisel Ai ",
+                        "message": "Mohon dapat dipelajari terlebih dahulu"
+                      },
+                      "metadata": {
+                        "designer": {
+                          "x": 3300,
+                          "y": 600
+                        },
+                        "restore": {
+                          "parameters": {
+                            "__IMTCONN__": "{CONNECTION_ID}"
+                          },
+                          "expect": {
+                            "template": {
+                              "mode": "chose",
+                              "label": "Wisel AI"
+                            },
+                            "folder_uuid": {
+                              "mode": "chose"
+                            },
+                            "tags": {
+                              "mode": "chose"
+                            },
+                            "images": {
+                              "mode": "chose"
+                            },
+                            "metadata": {
+                              "mode": "chose"
+                            },
+                            "content_placeholders": {
+                              "mode": "chose"
+                            },
+                            "tokens": {
+                              "nested": {
+                                "Company website": {
+                                  "collapsed": true
+                                },
+                                "Harga Proposal": {
+                                  "collapsed": true
+                                },
+                                "Nama & Jabatan": {
+                                  "collapsed": true
+                                },
+                                "Nama Klien": {
+                                  "collapsed": true
+                                },
+                                "Nama Perusahaan Mitra": {
+                                  "collapsed": true
+                                }
+                              }
+                            },
+                            "recipients": {
+                              "mode": "chose"
+                            }
+                          }
+                        },
+                        "parameters": [
+                          {
+                            "name": "__IMTCONN__",
+                            "type": "account:pandadoc",
+                            "label": "Connection",
+                            "required": true
+                          }
+                        ],
+                        "expect": [
+                          {
+                            "name": "name",
+                            "type": "text",
+                            "label": "Document Name",
+                            "required": true
+                          },
+                          {
+                            "name": "template",
+                            "type": "select",
+                            "label": "Template ID",
+                            "required": true
+                          },
+                          {
+                            "name": "send",
+                            "type": "boolean",
+                            "label": "Send a document",
+                            "required": true
+                          },
+                          {
+                            "name": "folder_uuid",
+                            "type": "folder",
+                            "label": "Folder"
+                          },
+                          {
+                            "name": "tags",
+                            "type": "array",
+                            "label": "Tags",
+                            "spec": {
+                              "type": "text",
+                              "label": "Tag",
+                              "name": "value"
+                            }
+                          },
+                          {
+                            "name": "images",
+                            "type": "array",
+                            "label": "Images",
+                            "spec": [
+                              {
+                                "name": "name",
+                                "type": "text",
+                                "label": "Image Block Name",
+                                "required": true
+                              },
+                              {
+                                "name": "urls",
+                                "type": "url",
+                                "label": "Image URL",
+                                "required": true
+                              }
+                            ]
+                          },
+                          {
+                            "name": "metadata",
+                            "type": "array",
+                            "label": "Document Metadata",
+                            "spec": [
+                              {
+                                "name": "key",
+                                "type": "text",
+                                "label": "Key",
+                                "required": true
+                              },
+                              {
+                                "name": "value",
+                                "type": "text",
+                                "label": "Value",
+                                "required": true
+                              }
+                            ]
+                          },
+                          {
+                            "name": "content_placeholders",
+                            "type": "array",
+                            "label": "Content Placeholders",
+                            "spec": [
+                              {
+                                "name": "block_id",
+                                "type": "select",
+                                "label": "Block ID",
+                                "options": [],
+                                "required": true,
+                                "dynamic": true
+                              },
+                              {
+                                "name": "content_library_items",
+                                "spec": [
+                                  {
+                                    "name": "id",
+                                    "type": "select",
+                                    "label": "Content Library Item ID",
+                                    "options": {
+                                      "store": []
+                                    },
+                                    "required": true,
+                                    "dynamic": true
+                                  }
+                                ],
+                                "type": "array",
+                                "label": "Content Library Items",
+                                "required": true
+                              }
+                            ]
+                          },
+                          {
+                            "name": "tokens",
+                            "type": "collection",
+                            "label": "Tokens",
+                            "spec": [
+                              {
+                                "name": "Contractor.Email",
+                                "type": "email",
+                                "label": "Role: Contractor Email",
+                                "metadata": {
+                                  "role": "Contractor"
+                                }
+                              },
+                              {
+                                "name": "Customer.Email",
+                                "type": "email",
+                                "label": "Role: Customer Email",
+                                "metadata": {
+                                  "role": "Customer"
+                                }
+                              },
+                              {
+                                "name": "Client.Email",
+                                "type": "email",
+                                "label": "Role: Client Email",
+                                "metadata": {
+                                  "role": "Client"
+                                }
+                              },
+                              {
+                                "name": "Client.Company",
+                                "type": "text",
+                                "label": "Role: Client  Company ",
+                                "metadata": {
+                                  "role": "Client"
+                                }
+                              },
+                              {
+                                "name": "Client.FirstName",
+                                "type": "text",
+                                "label": "Role: Client  First Name ",
+                                "metadata": {
+                                  "role": "Client"
+                                }
+                              },
+                              {
+                                "name": "Client.LastName",
+                                "type": "text",
+                                "label": "Role: Client  Last Name ",
+                                "metadata": {
+                                  "role": "Client"
+                                }
+                              },
+                              {
+                                "name": "Company website",
+                                "type": "text",
+                                "label": "Token: Company  website"
+                              },
+                              {
+                                "name": "Harga Proposal",
+                                "type": "text",
+                                "label": "Token: Harga  Proposal "
+                              },
+                              {
+                                "name": "Nama & Jabatan",
+                                "type": "text",
+                                "label": "Token: Nama  & Jabatan "
+                              },
+                              {
+                                "name": "Nama Klien",
+                                "type": "text",
+                                "label": "Token: Nama  Klien "
+                              },
+                              {
+                                "name": "Nama Perusahaan Mitra",
+                                "type": "text",
+                                "label": "Token: Nama  Perusahaan  Mitra "
+                              },
+                              {
+                                "name": "Proposal.goals",
+                                "type": "text",
+                                "label": "Token: Proposal  goals"
+                              },
+                              {
+                                "name": "Proposal.implementation",
+                                "type": "text",
+                                "label": "Token: Proposal  implementation"
+                              },
+                              {
+                                "name": "Proposal.pricing",
+                                "type": "text",
+                                "label": "Token: Proposal  pricing"
+                              },
+                              {
+                                "name": "Proposal.service",
+                                "type": "text",
+                                "label": "Token: Proposal  service"
+                              },
+                              {
+                                "name": "Proposal.total",
+                                "type": "text",
+                                "label": "Token: Proposal  total"
+                              },
+                              {
+                                "name": "Total Proposal",
+                                "type": "text",
+                                "label": "Token: Total  Proposal "
+                              }
+                            ]
+                          },
+                          {
+                            "name": "fields",
+                            "type": "collection",
+                            "label": "Fields",
+                            "spec": []
+                          },
+                          {
+                            "name": "recipients",
+                            "type": "array",
+                            "label": "CC Recipients",
+                            "spec": [
+                              {
+                                "name": "email",
+                                "label": "Email",
+                                "type": "email",
+                                "required": true
+                              },
+                              {
+                                "name": "first_name",
+                                "label": "First name",
+                                "type": "text"
+                              },
+                              {
+                                "name": "last_name",
+                                "label": "Last name",
+                                "type": "text"
+                              }
+                            ]
+                          },
+                          {
+                            "name": "subject",
+                            "type": "text",
+                            "label": "Subject",
+                            "required": true
+                          },
+                          {
+                            "name": "message",
+                            "type": "text",
+                            "label": "Message",
+                            "required": true
+                          }
+                        ]
+                      }
+                    },
+                    {
+                      "id": 46,
+                      "module": "airtable:ActionUpdateRecords",
+                      "version": 3,
+                      "parameters": {
+                        "__IMTCONN__": "{CONNECTION_ID}"
+                      },
+                      "mapper": {
+                        "base": "{AIRTABLE_BASE_ID}",
+                        "typecast": false,
+                        "useColumnId": false,
+                        "table": "{AIRTABLE_TABLE_ID}",
+                        "id": "{{1.id}}",
+                        "record": {
+                          "fldCETYIWQ6GyVFgo": "{{now}}"
+                        }
+                      },
+                      "metadata": {
+                        "designer": {
+                          "x": 3600,
+                          "y": 600
+                        },
+                        "restore": {
+                          "parameters": {
+                            "__IMTCONN__": "{CONNECTION_ID}"
+                          },
+                          "expect": {
+                            "base": {
+                              "label": "Lead Base"
+                            },
+                            "typecast": {
+                              "mode": "chose"
+                            },
+                            "useColumnId": {
+                              "mode": "chose"
+                            },
+                            "table": {
+                              "label": "Lead Contacts"
+                            },
+                            "record": {
+                              "nested": {
+                                "fldEhxN9olEcL9RDj": {
+                                  "mode": "chose"
+                                }
+                              }
+                            }
+                          }
+                        },
+                        "parameters": [
+                          {
+                            "name": "__IMTCONN__",
+                            "type": "account:airtable3,airtable2",
+                            "label": "Connection",
+                            "required": true
+                          }
+                        ],
+                        "expect": [
+                          {
+                            "name": "base",
+                            "type": "select",
+                            "label": "Base",
+                            "required": true
+                          },
+                          {
+                            "name": "typecast",
+                            "type": "boolean",
+                            "label": "Smart links",
+                            "required": true
+                          },
+                          {
+                            "name": "useColumnId",
+                            "type": "boolean",
+                            "label": "Use Column ID",
+                            "required": true
+                          },
+                          {
+                            "name": "table",
+                            "type": "select",
+                            "label": "Table",
+                            "required": true
+                          },
+                          {
+                            "name": "id",
+                            "type": "text",
+                            "label": "Record ID",
+                            "required": true
+                          },
+                          {
+                            "name": "record",
+                            "type": "collection",
+                            "label": "Record",
+                            "spec": [
+                              {
+                                "name": "fldINWwCZbHISL0fo",
+                                "type": "text",
+                                "label": "Nama Depan"
+                              },
+                              {
+                                "name": "fld7OoSTFDjy3atRj",
+                                "type": "text",
+                                "label": "Nama Belakang"
+                              },
+                              {
+                                "name": "fldEAVmCup2JYTZZP",
+                                "type": "text",
+                                "label": "Email"
+                              },
+                              {
+                                "name": "fldwQ24L7kHD3dCIY",
+                                "type": "text",
+                                "label": "No Telepon"
+                              },
+                              {
+                                "name": "fldUstMxtEzzJiEw7",
+                                "type": "text",
+                                "label": "Perusahaan"
+                              },
+                              {
+                                "name": "fld9DfZILqWSHJbsg",
+                                "type": "number",
+                                "label": "Budget"
+                              },
+                              {
+                                "name": "fldJqKzYMkZ79E691",
+                                "type": "text",
+                                "label": "Note"
+                              },
+                              {
+                                "name": "fldsSjwNJh2Nl6WLK",
+                                "type": "date",
+                                "label": "Contacted on",
+                                "time": false
+                              },
+                              {
+                                "name": "fldy6gSGftf4xND9Q",
+                                "type": "text",
+                                "label": "Call Summary"
+                              },
+                              {
+                                "name": "fldEhxN9olEcL9RDj",
+                                "type": "boolean",
+                                "label": "interested"
+                              },
+                              {
+                                "name": "fldCETYIWQ6GyVFgo",
+                                "type": "date",
+                                "label": "Proposal Sent on",
+                                "time": false
+                              }
+                            ]
+                          }
+                        ],
+                        "interface": [
+                          {
+                            "name": "id",
+                            "type": "text",
+                            "label": "ID"
+                          },
+                          {
+                            "name": "createdTime",
+                            "type": "date",
+                            "label": "Created Time"
+                          },
+                          {
+                            "name": "Nama Depan",
+                            "label": "Nama Depan",
+                            "type": "text"
+                          },
+                          {
+                            "name": "Nama Belakang",
+                            "label": "Nama Belakang",
+                            "type": "text"
+                          },
+                          {
+                            "name": "Email",
+                            "label": "Email",
+                            "type": "text"
+                          },
+                          {
+                            "name": "No Telepon",
+                            "label": "No Telepon",
+                            "type": "text"
+                          },
+                          {
+                            "name": "Perusahaan",
+                            "label": "Perusahaan",
+                            "type": "text"
+                          },
+                          {
+                            "name": "Budget",
+                            "label": "Budget",
+                            "type": "number"
+                          },
+                          {
+                            "name": "Note",
+                            "label": "Note",
+                            "type": "text",
+                            "multiline": true
+                          },
+                          {
+                            "name": "Created on",
+                            "label": "Created on",
+                            "type": "date"
+                          },
+                          {
+                            "name": "Qualification",
+                            "label": "Qualification",
+                            "type": "text"
+                          },
+                          {
+                            "name": "Message",
+                            "label": "Message",
+                            "type": "text"
+                          },
+                          {
+                            "name": "Contacted on",
+                            "label": "Contacted on",
+                            "type": "date",
+                            "time": false
+                          },
+                          {
+                            "name": "Call Summary",
+                            "label": "Call Summary",
+                            "type": "text",
+                            "multiline": true
+                          },
+                          {
+                            "name": "interested",
+                            "label": "interested",
+                            "type": "boolean"
+                          },
+                          {
+                            "name": "Proposal Sent on",
+                            "label": "Proposal Sent on",
+                            "type": "date",
+                            "time": false
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                },
+                {
+                  "flow": [
+                    {
+                      "id": 47,
+                      "module": "airtable:ActionUpdateRecords",
+                      "version": 3,
+                      "parameters": {
+                        "__IMTCONN__": "{CONNECTION_ID}"
+                      },
+                      "filter": {
+                        "name": "Not interested",
+                        "conditions": [
+                          [
+                            {
+                              "a": "{{34.data.analysis.successEvaluation}}",
+                              "b": "false",
+                              "o": "text:equal"
+                            }
+                          ]
+                        ]
+                      },
+                      "mapper": {
+                        "base": "{AIRTABLE_BASE_ID}",
+                        "typecast": false,
+                        "useColumnId": false,
+                        "table": "{AIRTABLE_TABLE_ID}",
+                        "id": "{{1.id}}",
+                        "record": {
+                          "fldsSjwNJh2Nl6WLK": "{{now}}",
+                          "fldy6gSGftf4xND9Q": "{{34.data.summary}}",
+                          "fldEhxN9olEcL9RDj": false
+                        }
+                      },
+                      "metadata": {
+                        "designer": {
+                          "x": 2400,
+                          "y": 900
+                        },
+                        "restore": {
+                          "parameters": {
+                            "__IMTCONN__": "{CONNECTION_ID}"
+                          },
+                          "expect": {
+                            "base": {
+                              "label": "Lead Base"
+                            },
+                            "typecast": {
+                              "mode": "chose"
+                            },
+                            "useColumnId": {
+                              "mode": "chose"
+                            },
+                            "table": {
+                              "label": "Lead Contacts"
+                            },
+                            "record": {
+                              "nested": {
+                                "fldEhxN9olEcL9RDj": {
+                                  "mode": "chose"
+                                }
+                              }
+                            }
+                          }
+                        },
+                        "parameters": [
+                          {
+                            "name": "__IMTCONN__",
+                            "type": "account:airtable3,airtable2",
+                            "label": "Connection",
+                            "required": true
+                          }
+                        ],
+                        "expect": [
+                          {
+                            "name": "base",
+                            "type": "select",
+                            "label": "Base",
+                            "required": true
+                          },
+                          {
+                            "name": "typecast",
+                            "type": "boolean",
+                            "label": "Smart links",
+                            "required": true
+                          },
+                          {
+                            "name": "useColumnId",
+                            "type": "boolean",
+                            "label": "Use Column ID",
+                            "required": true
+                          },
+                          {
+                            "name": "table",
+                            "type": "select",
+                            "label": "Table",
+                            "required": true
+                          },
+                          {
+                            "name": "id",
+                            "type": "text",
+                            "label": "Record ID",
+                            "required": true
+                          },
+                          {
+                            "name": "record",
+                            "type": "collection",
+                            "label": "Record",
+                            "spec": [
+                              {
+                                "name": "fldINWwCZbHISL0fo",
+                                "type": "text",
+                                "label": "Nama Depan"
+                              },
+                              {
+                                "name": "fld7OoSTFDjy3atRj",
+                                "type": "text",
+                                "label": "Nama Belakang"
+                              },
+                              {
+                                "name": "fldEAVmCup2JYTZZP",
+                                "type": "text",
+                                "label": "Email"
+                              },
+                              {
+                                "name": "fldwQ24L7kHD3dCIY",
+                                "type": "text",
+                                "label": "No Telepon"
+                              },
+                              {
+                                "name": "fldUstMxtEzzJiEw7",
+                                "type": "text",
+                                "label": "Perusahaan"
+                              },
+                              {
+                                "name": "fld9DfZILqWSHJbsg",
+                                "type": "number",
+                                "label": "Budget"
+                              },
+                              {
+                                "name": "fldJqKzYMkZ79E691",
+                                "type": "text",
+                                "label": "Note"
+                              },
+                              {
+                                "name": "fldsSjwNJh2Nl6WLK",
+                                "type": "date",
+                                "label": "Contacted on",
+                                "time": false
+                              },
+                              {
+                                "name": "fldy6gSGftf4xND9Q",
+                                "type": "text",
+                                "label": "Call Summary"
+                              },
+                              {
+                                "name": "fldEhxN9olEcL9RDj",
+                                "type": "boolean",
+                                "label": "interested"
+                              },
+                              {
+                                "name": "fldCETYIWQ6GyVFgo",
+                                "type": "date",
+                                "label": "Proposal Sent on",
+                                "time": false
+                              }
+                            ]
+                          }
+                        ],
+                        "interface": [
+                          {
+                            "name": "id",
+                            "type": "text",
+                            "label": "ID"
+                          },
+                          {
+                            "name": "createdTime",
+                            "type": "date",
+                            "label": "Created Time"
+                          },
+                          {
+                            "name": "Nama Depan",
+                            "label": "Nama Depan",
+                            "type": "text"
+                          },
+                          {
+                            "name": "Nama Belakang",
+                            "label": "Nama Belakang",
+                            "type": "text"
+                          },
+                          {
+                            "name": "Email",
+                            "label": "Email",
+                            "type": "text"
+                          },
+                          {
+                            "name": "No Telepon",
+                            "label": "No Telepon",
+                            "type": "text"
+                          },
+                          {
+                            "name": "Perusahaan",
+                            "label": "Perusahaan",
+                            "type": "text"
+                          },
+                          {
+                            "name": "Budget",
+                            "label": "Budget",
+                            "type": "number"
+                          },
+                          {
+                            "name": "Note",
+                            "label": "Note",
+                            "type": "text",
+                            "multiline": true
+                          },
+                          {
+                            "name": "Created on",
+                            "label": "Created on",
+                            "type": "date"
+                          },
+                          {
+                            "name": "Qualification",
+                            "label": "Qualification",
+                            "type": "text"
+                          },
+                          {
+                            "name": "Message",
+                            "label": "Message",
+                            "type": "text"
+                          },
+                          {
+                            "name": "Contacted on",
+                            "label": "Contacted on",
+                            "type": "date",
+                            "time": false
+                          },
+                          {
+                            "name": "Call Summary",
+                            "label": "Call Summary",
+                            "type": "text",
+                            "multiline": true
+                          },
+                          {
+                            "name": "interested",
+                            "label": "interested",
+                            "type": "boolean"
+                          },
+                          {
+                            "name": "Proposal Sent on",
+                            "label": "Proposal Sent on",
+                            "type": "date",
+                            "time": false
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "metadata": {
+    "instant": false,
+    "version": 1,
+    "scenario": {
+      "roundtrips": 1,
+      "maxErrors": 3,
+      "autoCommit": true,
+      "autoCommitTriggerLast": true,
+      "sequential": false,
+      "slots": null,
+      "confidential": false,
+      "dataloss": false,
+      "dlq": false,
+      "freshVariables": false
+    },
+    "designer": {
+      "orphans": []
+    },
+    "zone": "eu2.make.com",
+    "notes": []
+  }
+}
