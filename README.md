@@ -24,7 +24,7 @@ The goal of these projects is to demonstrate my ability to create **AI-driven au
 - Uses OpenAI to summarize company data, then VAPI makes personalized calls.  
 - Follows up with emails and updates Airtable records.  
 
-👉 [View details](airtable-openai-voice/README.md)  
+👉 [View details](airtable-openai-vapi-panda/README.md)  
 
 ---
 
