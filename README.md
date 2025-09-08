@@ -45,7 +45,7 @@ The goal of these projects is to demonstrate my ability to create **AI-driven au
 ![picture](docs/workflow-airtable-email.png)
 
 ### Airtable → OpenAI → Voice Agent → Panda
-![picture](docs/airtable-openai-voice-workflow.png)
+![picture](docs/workflow-airtable-openai-voice.png)
 
 ---
 
